@@ -5,14 +5,14 @@ public class Main {
     public static void main(String[] args) {
 
         Scanner scanner = new Scanner(System.in);
-        String[] contacts = new String[1];
+        String[] contacts = new String[10];
         int nextEmpty = 0;
-        int command = 4;
+        int command = 6;
         do {
             System.out.println("""
                     1.Create Contact
                     2.Search Contact
-                    3.Delete Contact by name
+                    3.Delete Contact by phoneNumber
                     4.Delete Contact by line
                     5.List All Contacts
                     6.Exit
@@ -37,13 +37,25 @@ public class Main {
                     nextEmpty++;
                     break;
                 case 2:
-                    System.out.println("Type name:");
-                    String searchName = scanner.next();
-                    searchByName(searchName, contacts);
+                    System.out.println("""
+                            1.Search Contact by name
+                            2.Search Contact by surname
+                            3.Search Contact by phoneNumber
+                            """);
+                    int searchCategory = scanner.nextInt();
+                    if (searchCategory < 1 || searchCategory > 3) {
+                        System.err.println("Enter a number from 1 to 3");
+                        break;
+                    }
+                    String categorySearch =
+                            searchCategory == 1 ? "Name" : searchCategory == 2 ? "Surname" : "PhoneNumber";
+                    System.out.println("Type " + categorySearch + ":");
+                    String search = scanner.next();
+                    search(search, contacts, searchCategory - 1);
                     break;
                 case 3:
-                    System.out.println("Delete Contact by name");
-                    System.out.println("Type name:");
+                    System.out.println("Delete Contact by phoneNumber");
+                    System.out.println("Type phoneNumber:");
                     String deleteName = scanner.next();
                     nextEmpty = deleteContact(deleteName, contacts);
                     break;
@@ -56,61 +68,49 @@ public class Main {
                 case 5:
                     for (int i = 0; i < contacts.length; i++) {
                         if (contacts[i] == null) break;
-                        System.out.println("Line "+(i + 1) + " | " + contacts[i]);
+                        System.out.println("Line " + (i + 1) + " | " + contacts[i]);
                     }
                     break;
                 default:
-                    System.err.println("Invalid command, Command should be in range 1,2,3,4");
+                    if (6 != command) System.err.println("Invalid command, Command should be in range 1,2,3,4");
                     break;
             }
         } while (command != 6);
     }
 
-    public static void searchByName(String searchName, String[] contacts) {
+    private static void search(String search, String[] contacts, int index) {
         int n = 0;
-        String nameLowerCase = searchName.toLowerCase();
+        String categorySearch = index == 0 ? "Name" : index == 1 ? "Surname" : "PhoneNumber";
+        String nameLowerCase = search.toLowerCase();
         for (String contact : contacts) {
             if (contact == null) break;
-            if (contact.toLowerCase().startsWith(nameLowerCase)) {
+            String contactName = contact.split(" ")[index].toLowerCase();
+            if (contactName.startsWith(nameLowerCase)) {
                 System.out.println(contact);
                 n++;
             }
         }
-        if (n == 0) System.out.println("Not found contact name: " + searchName);
+        if (n == 0) System.out.println("Not found contact " + categorySearch + ": " + search);
     }
 
-    public static void searchByNameOption2(String searchName, String[] contacts) {
-        int n = 0;
-        String nameLowerCase = searchName.toLowerCase();
-        for (String contact : contacts) {
-            if (contact == null) break;
-            String contactName = contact.split(" ")[0].toLowerCase();
-            if (contactName.equals(nameLowerCase.toLowerCase())) {
-                System.out.println(contact);
-                n++;
-            }
-        }
-        if (n == 0) System.out.println("Not found contact name: " + searchName);
-    }
-
-    public static int deleteContact(String name, String[] contacts) {
-        String nameLowerCase = name.toLowerCase();
+    private static int deleteContact(String phoneNumber, String[] contacts) {
         int n = 0;
         int j = 0;
         String[] copy = new String[contacts.length];
         for (String contact : contacts) {
             if (contact == null) break;
-            if (!contact.toLowerCase().startsWith(nameLowerCase)) {
+            String contactName = contact.split(" ")[2];
+            if (!contactName.equals(phoneNumber)) {
                 copy[j] = contact;
                 j++;
             } else n++;
         }
         if (n == 0) System.err.println("Unable to find user");
-        System.arraycopy(copy, 0, contacts, 0, copy.length - n);
+        System.arraycopy(copy, 0, contacts, 0, copy.length);
         return j;
     }
 
-    public static int deleteContactByLine(int line, String[] contacts) {
+    private static int deleteContactByLine(int line, String[] contacts) {
         int n = 0;
         int j = 0;
         String[] copy = new String[contacts.length];
@@ -122,7 +122,7 @@ public class Main {
             } else n++;
         }
         if (n == 0) System.err.println("Line not found");
-        System.arraycopy(copy, 0, contacts, 0, copy.length - n);
+        System.arraycopy(copy, 0, contacts, 0, copy.length);
         return j;
     }
 }
