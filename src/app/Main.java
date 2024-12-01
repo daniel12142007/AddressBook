@@ -4,17 +4,16 @@ import app.model.Contact;
 import app.model.enums.Search;
 import app.service.ContactService;
 
-import static app.model.enums.Search.*;
-
 import java.util.Scanner;
+
+import static app.model.enums.Search.*;
 
 public class Main {
     private static final ContactService contactService = new ContactService();
 
     public static void main(String[] args) {
-
         Scanner scanner = new Scanner(System.in);
-        String command;
+        int command;
         do {
             System.out.println("""
                     1.Create Contact
@@ -24,9 +23,10 @@ public class Main {
                     5.Update Contact
                     6.Exit
                     """);
-            command = scanner.nextLine();
+            command = scanner.nextInt();
+            scanner.nextLine();
             switch (command) {
-                case "1":
+                case 1:
                     System.out.println("Create Contact(Cancel enter B)");
                     System.out.println("Name:");
                     String name = scanner.nextLine();
@@ -41,7 +41,7 @@ public class Main {
                             phone
                     ));
                     break;
-                case "2":
+                case 2:
                     System.out.println("""
                             1.Search Contact by name
                             2.Search Contact by surname
@@ -68,7 +68,7 @@ public class Main {
                         );
                     } else System.out.println(contactService.searchContactUniversal(search, categorySearch));
                     break;
-                case "3":
+                case 3:
                     System.out.println("Delete Contact by phoneNumber(Cancel enter B)");
                     System.out.println("Type phoneNumber:");
                     String deletePhoneNumber = scanner.nextLine();
@@ -77,14 +77,14 @@ public class Main {
                         System.out.println("Contact deleted");
                     else System.err.println("Failed delete contact");
                     break;
-                case "4":
+                case 4:
                     var list = contactService.list();
                     System.out.println(
                             list == null ?
                                     "There is nothing yet" : list
                     );
                     break;
-                case "5":
+                case 5:
                     System.out.println("Update Contact(Cancel enter B)");
                     System.out.println("Enter phoneNumber:");
                     String searchPhoneNumber = scanner.nextLine();
@@ -104,10 +104,10 @@ public class Main {
                             searchPhoneNumber);
                     break;
                 default:
-                    if (!command.equals("6"))
+                    if (command != 6)
                         System.err.println("Invalid command, Command should be in range 1,2,3,4,5,6");
                     break;
             }
-        } while (!command.equals("6"));
+        } while (command != 6);
     }
 }

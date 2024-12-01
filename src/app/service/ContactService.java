@@ -2,15 +2,26 @@ package app.service;
 
 import app.model.Contact;
 import app.model.enums.Search;
+import app.repository.FileRepository;
+import app.repository.FileRepositoryImpl;
 
 import java.util.*;
 
 public class ContactService {
-    private final static HashMap<String, Contact> contacts = new LinkedHashMap<>();
-    private final static Set<String> uniquePhone = new LinkedHashSet<>();
+    private final static FileRepository fileRepository = new FileRepositoryImpl();
+    private static HashMap<String, Contact> contacts = new LinkedHashMap<>();
+    private static Set<String> uniquePhone = new LinkedHashSet<>();
+
+    public ContactService() {
+        contacts = fileRepository.getMapFormat();
+        uniquePhone = fileRepository.getSetFormat();
+    }
 
     public void createContact(Contact contact) {
         int oldSizeSet = uniquePhone.size();
+//        if (!contact.getPhone().matches("^\\+\\d{10,15}$\n")) {
+//            error
+//        }
         String phone = contact.getPhone();
         uniquePhone.add(phone);
         if (oldSizeSet == uniquePhone.size()) {
@@ -18,6 +29,7 @@ public class ContactService {
             return;
         }
         contacts.put(phone, contact);
+        fileRepository.saveContact(contacts);
     }
 
     public Contact searchContact(String phoneNumber) {
@@ -37,6 +49,7 @@ public class ContactService {
         }
         contacts.remove(phoneNumber);
         uniquePhone.remove(phoneNumber);
+        fileRepository.saveContact(contacts);
         return true;
     }
 
@@ -50,13 +63,15 @@ public class ContactService {
                 && contacts.get(contact.getPhone()) != null) {
             System.err.println("Phone must unique phone number");
             return;
-        }if (contacts.get(phoneNumber)==null){
+        }
+        if (contacts.get(phoneNumber) == null) {
             System.err.println("Not found contact");
             return;
         }
-        if (contact.getPhone().equals(phoneNumber))
+        if (contact.getPhone().equals(phoneNumber)) {
             contacts.put(phoneNumber, contact);
-        else {
+            fileRepository.saveContact(contacts);
+        } else {
             deleteContactByPhone(phoneNumber);
             createContact(contact);
         }
