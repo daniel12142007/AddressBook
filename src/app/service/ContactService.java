@@ -8,20 +8,18 @@ import app.repository.FileRepositoryImpl;
 import java.util.*;
 
 public class ContactService {
-    private final static FileRepository fileRepository = new FileRepositoryImpl();
+    private static FileRepository fileRepository;
     private static HashMap<String, Contact> contacts = new LinkedHashMap<>();
     private static Set<String> uniquePhone = new LinkedHashSet<>();
 
-    public ContactService() {
+    public ContactService(String filPath) {
+        fileRepository = new FileRepositoryImpl(filPath);
         contacts = fileRepository.getMapFormat();
         uniquePhone = fileRepository.getSetFormat();
     }
 
     public void createContact(Contact contact) {
         int oldSizeSet = uniquePhone.size();
-//        if (!contact.getPhone().matches("^\\+\\d{10,15}$\n")) {
-//            error
-//        }
         String phone = contact.getPhone();
         uniquePhone.add(phone);
         if (oldSizeSet == uniquePhone.size()) {

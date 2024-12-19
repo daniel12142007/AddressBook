@@ -12,7 +12,8 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ContactServiceTest {
     final String PHONE = "+996 705";
     final String PHONE2 = "+996 700";
-    final ContactService contactService = new ContactService();
+    final ContactService contactService =
+            new ContactService("C:\\Users\\User\\IdeaProjects\\address_book\\contacts.json");
 
     @Test
     @DisplayName("Test create")

@@ -1,6 +1,7 @@
 package app.model;
 
 import app.model.enums.Search;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Contact {
     private String name;
@@ -11,7 +12,9 @@ public class Contact {
 
     }
 
-    public Contact(String name, String surname, String phone) {
+    public Contact(@JsonProperty("name") String name,
+                   @JsonProperty("surname") String surname,
+                   @JsonProperty("phone") String phone) {
         this.name = name;
         this.surname = surname;
         this.phone = phone;
@@ -47,6 +50,10 @@ public class Contact {
 
     @Override
     public String toString() {
-        return name + ';' + surname + ';' + phone;
+        return "Contact{" +
+                "name='" + name + '\'' +
+                ", phone='" + phone + '\'' +
+                ", surname='" + surname + '\'' +
+                '}';
     }
 }
