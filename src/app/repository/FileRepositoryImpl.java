@@ -1,22 +1,25 @@
 package app.repository;
 
 import app.model.Contact;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class FileRepositoryImpl implements FileRepository {
-    private final String PATH_FILE = "C:\\Users\\User\\IdeaProjects\\address_book\\contacts.csv";
+    private final String PATH_FILE;
     private final String DELIMITER = ";";
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    public FileRepositoryImpl(String filePath) {
+        this.PATH_FILE = filePath;
+    }
 
     @Override
     public void saveContact(HashMap<String, Contact> contacts) {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(PATH_FILE, false))) {
-            for (Contact value : contacts.values()) {
-                writer.write(value.toString());
-                writer.newLine();
-            }
+        try {
+            objectMapper.writeValue(new File(PATH_FILE), contacts);
         } catch (IOException e) {
             System.err.println("Ошибка при записи файла: " + e.getMessage());
         }
@@ -24,10 +27,10 @@ public class FileRepositoryImpl implements FileRepository {
 
     @Override
     public List<Contact> readFile() {
-        try (BufferedReader reader = new BufferedReader(new FileReader(PATH_FILE))) {
-            return reader.lines().map(this::parseContact).collect(Collectors.toList());
-        } catch (IOException e) {
-            System.err.println("Ошибка при чтении файла: " + e.getMessage());
+        try {
+            File file = new File(PATH_FILE);
+            return objectMapper.readValue(file, ArrayList.class);
+        } catch (Exception e) {
             return new ArrayList<>();
         }
     }
@@ -44,10 +47,5 @@ public class FileRepositoryImpl implements FileRepository {
         for (Contact contact : readFile())
             contactHashMap.put(contact.getPhone(), contact);
         return contactHashMap;
-    }
-
-    private Contact parseContact(String line) {
-        String[] splitLine = line.split(DELIMITER);
-        return new Contact(splitLine[0], splitLine[1], splitLine[2]);
     }
 }

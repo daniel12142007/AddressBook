@@ -9,7 +9,8 @@ import java.util.Scanner;
 import static app.model.enums.Search.*;
 
 public class Main {
-    private static final ContactService contactService = new ContactService();
+    private static final ContactService contactService =
+            new ContactService("C:\\Users\\User\\IdeaProjects\\address_book\\contacts.json");
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
